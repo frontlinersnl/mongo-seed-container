@@ -1,0 +1,21 @@
+{
+  "name": "mongo-seed-container",
+  "version": "1.0.0",
+  "description": "[![logo](./logo.jpg)](https://inforit.nl)",
+  "main": "Dockerfile",
+  "scripts": {
+    "build": "docker build -t inforitnl/mongo-seed .",
+    "tag": "docker tag inforitnl/mongo-seed",
+    "push": "docker push inforitnl/mongo-seed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inforitnl/mongo-seed-container.git"
+  },
+  "author": "Rick van Lieshout <info@rickvanlieshout.com> (http://rickvanlieshout.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Inforitnl/mongo-seed-container/issues"
+  },
+  "homepage": "https://github.com/Inforitnl/mongo-seed-container#readme"
+}
