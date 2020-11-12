@@ -37,4 +37,8 @@ for currentFile in *.json; do
     fi
     echo "importing $currentFile"
     mongoimport --uri "$MONGO_URI" --file=$currentFile --mode=upsert
+    if [ $? -eq 1 ]
+    then
+        exit 1
+    fi
 done
