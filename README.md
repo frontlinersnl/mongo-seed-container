@@ -11,7 +11,7 @@ This container enables someone to seed a mongo database given \*.json seed files
 Every seed file ending in .json will be picked up from the main working directory.
 All you have to do is add them in the base container :)
 
-```
+``` dockerfile
 FROM inforitnl/mongo-seed
 COPY ./seed-files .
 ```
@@ -23,15 +23,15 @@ version: "3.4"
 
 services:
   seed:
-    image: seed-container-name
-    container_name: seed-container-name
-    # this host works for Windows by default.. that's why I chose this
+    image: inforitnl/mongo-seed:2.0.0
     hostname: host.docker.internal
     environment:
-      MONGO_URI: "mongodb://admin:supersecretpassword@172.17.0.1:27017/db-name?authSource=admin&replicaSet=replicaset-name"
+      MONGO_URI: "mongodb://admin:supersecretpassword@host.docker.internal:27017/db-name?authSource=admin&replicaSet=replicaset-name"
 
-    # windows users: comment out extra_hosts section
-    # linux/mac/wsl users: make sure the extra_hosts section ISN'T commented out
+    volumes:
+      - ./seed/seed-files/:/tmp/mongoseed/
+
+    # windows users: use your docker instance IP here instead of 172.17.0.1
     extra_hosts:
       host.docker.internal: 172.17.0.1
 
@@ -49,6 +49,7 @@ services:
 | MONGO_PORT               | port                                                                                         |
 | MONGO_USERNAME           | username                                                                                     |
 | MONGO_PASSWORD           | password                                                                                     |
+| SEED_FILES_PATH           | custom path to seed files, defaults to /tmp/mongoseed                                       |
 
 ## update instructions
 
