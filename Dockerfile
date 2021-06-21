@@ -1,5 +1,5 @@
 FROM mongo
 WORKDIR /tmp/mongoseed
-COPY ./scripts .
-RUN chmod +x ./mongo-seed.sh
-CMD [ "./mongo-seed.sh" ]
+COPY ./scripts /opt/
+RUN chmod +x /opt/mongo-seed.sh
+CMD [ "/opt/mongo-seed.sh" ]

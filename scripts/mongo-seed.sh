@@ -12,6 +12,9 @@ MONGO_CREATE_COLLECTIONS="${MONGO_CREATE_COLLECTIONS:-"true"}"
 # user can specify an uri instead, most other settings will be ignored.
 MONGO_URI="${MONGO_URI:-"mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@$MONGO_HOST:$MONGO_PORT/$MONGO_DB?authSource=$MONGO_AUTH_DB"}"
 
+# user can specify a custom seed files path
+SEED_FILES_PATH="${SEED_FILES_PATH:-"/tmp/mongoseed/"}"
+
 if [ "$MONGO_CREATE_COLLECTIONS" == "false" ]; then
     # get a list of collection
     listCollectionsResult=$(mongo ${MONGO_URI} --quiet --eval "db.runCommand( { listCollections: 1, nameOnly: true } );")
@@ -20,7 +23,7 @@ if [ "$MONGO_CREATE_COLLECTIONS" == "false" ]; then
 fi
 
 # ./seed
-for currentFile in *.json; do
+for currentFile in "$SEED_FILE_PATH"*.json; do
     echo "Processing ${currentFile}"
     if [ -n "$collectionList" ]; then
         # get filename without extension
