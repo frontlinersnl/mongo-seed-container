@@ -17,13 +17,13 @@ SEED_FILES_PATH="${SEED_FILES_PATH:-"/tmp/mongoseed/"}"
 
 if [ "$MONGO_CREATE_COLLECTIONS" == "false" ]; then
     # get a list of collection
-    listCollectionsResult=$(mongo ${MONGO_URI} --quiet --eval "db.runCommand( { listCollections: 1, nameOnly: true } );")
+    listCollectionsResult=$(mongo "${MONGO_URI}" --quiet --eval "db.runCommand( { listCollections: 1, nameOnly: true } );")
     # filter out NumberLong(0) because that is what the id returns. Next select everything in cursor.firstBatch and map it to an array of names
-    collectionList=$(echo ${listCollectionsResult/"NumberLong(0)"/"\"\""} | jq -c ".cursor.firstBatch" | jq 'map(.name)')
+    collectionList=$(echo "${listCollectionsResult/"NumberLong(0)"/"\"\""}" | jq -c ".cursor.firstBatch" | jq 'map(.name)')
 fi
 
 # ./seed
-for currentFile in "$SEED_FILE_PATH"*.json; do
+for currentFile in "$SEED_FILES_PATH"*.json; do
     echo "Processing ${currentFile}"
     if [ -n "$collectionList" ]; then
         # get filename without extension
@@ -39,7 +39,7 @@ for currentFile in "$SEED_FILE_PATH"*.json; do
         fi
     fi
     echo "importing $currentFile"
-    mongoimport --uri "$MONGO_URI" --file=$currentFile --mode=upsert
+    mongoimport --uri "$MONGO_URI" --file="$currentFile" --mode=upsert
     if [ $? -eq 1 ]
     then
         exit 1
