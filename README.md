@@ -49,7 +49,8 @@ services:
 | MONGO_PORT               | port                                                                                         |
 | MONGO_USERNAME           | username                                                                                     |
 | MONGO_PASSWORD           | password                                                                                     |
-| SEED_FILES_PATH           | custom path to seed files, defaults to /tmp/mongoseed                                       |
+| SEED_FILES_PATH          | custom path to seed files, defaults to /tmp/mongoseed                                       |
+| IGNORE_NON_EMPTY         | when set to true will prevent seed data from importing when the collection exists and has more than 0 records |
 
 ## update instructions
 
