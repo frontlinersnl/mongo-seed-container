@@ -37,7 +37,7 @@ for currentFile in "$SEED_FILES_PATH"*.json; do
 
     # if collection is found
     if [ $(echo "$collectionWithFileName" | wc -l) -gt "1" ]; then
-        # if ignore empty == true && collection.count > 0 then...
+        # if ignore_non_empty == true && collection.count > 0 then...
         if [ "$IGNORE_NON_EMPTY" == "true" ] && [ $(echo "$collectionWithFileName" | jq ".count") -gt "0" ]; then
             echo "Collection $fileName is not empty, skipping.."
         else

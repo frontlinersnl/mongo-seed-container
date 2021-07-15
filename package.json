@@ -1,6 +1,6 @@
 {
   "name": "mongo-seed-container",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "[![logo](./logo.jpg)](https://inforit.nl)",
   "main": "Dockerfile",
   "scripts": {
