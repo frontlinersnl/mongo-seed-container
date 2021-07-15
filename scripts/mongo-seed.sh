@@ -8,6 +8,7 @@ MONGO_PORT="${MONGO_PORT:-"27017"}"
 MONGO_USERNAME="${MONGO_USERNAME:-"admin"}"
 MONGO_PASSWORD="${MONGO_PASSWORD:-"123"}"
 MONGO_CREATE_COLLECTIONS="${MONGO_CREATE_COLLECTIONS:-"true"}"
+IGNORE_NON_EMPTY="${IGNORE_NON_EMPTY:-"false"}"
 
 # user can specify an uri instead, most other settings will be ignored.
 MONGO_URI="${MONGO_URI:-"mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@$MONGO_HOST:$MONGO_PORT/$MONGO_DB?authSource=$MONGO_AUTH_DB"}"
@@ -15,33 +16,38 @@ MONGO_URI="${MONGO_URI:-"mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@$MONGO_HOST:$
 # user can specify a custom seed files path
 SEED_FILES_PATH="${SEED_FILES_PATH:-"/tmp/mongoseed/"}"
 
-if [ "$MONGO_CREATE_COLLECTIONS" == "false" ]; then
-    # get a list of collection
-    listCollectionsResult=$(mongo "${MONGO_URI}" --quiet --eval "db.runCommand( { listCollections: 1, nameOnly: true } );")
-    # filter out NumberLong(0) because that is what the id returns. Next select everything in cursor.firstBatch and map it to an array of names
-    collectionList=$(echo "${listCollectionsResult/"NumberLong(0)"/"\"\""}" | jq -c ".cursor.firstBatch" | jq 'map(.name)')
-fi
 
-# ./seed
+collectionsWithCount=$(mongo "${MONGO_URI}" --quiet --eval "
+    var result = [];
+    db.getCollectionInfos().forEach(function(collection) {
+        var collectionResult = {name: collection.name, count: db[collection.name].count()}
+        result.push(collectionResult);
+    });
+    printjson(result);
+")
+
 for currentFile in "$SEED_FILES_PATH"*.json; do
     echo "Processing ${currentFile}"
-    if [ -n "$collectionList" ]; then
-        # get filename without extension
-        fileName=$(echo "$currentFile" | cut -f 1 -d '.')
-        
-        # check whether collection exists by searching for it in the collectionList
-        numberOfCollectionsFound=$(echo "$collectionList" | jq ".[] | select(.==\"$fileName\")" | wc -l)
 
-        # if not found, error out...
-        if [ "$numberOfCollectionsFound" -lt "1" ]; then
+    # filename without extension
+    fileName=$(echo "${currentFile##*/}" | cut -f 1 -d '.')
+    
+    # look for a collection that matches the current filename in our list of known collections
+    collectionWithFileName=$(echo "$collectionsWithCount" | jq ".[] | select(.name==\"$fileName\")")
+
+    # if collection is found
+    if [ $(echo "$collectionWithFileName" | wc -l) -gt "1" ]; then
+        # if ignore_non_empty == true && collection.count > 0 then...
+        if [ "$IGNORE_NON_EMPTY" == "true" ] && [ $(echo "$collectionWithFileName" | jq ".count") -gt "0" ]; then
+            echo "Collection $fileName is not empty, skipping.."
+        else
+            mongoimport --uri "$MONGO_URI" --file="$currentFile" --mode=upsert
+        fi
+    else
+        if [ "$MONGO_CREATE_COLLECTIONS" == "false" ]; then
             echo "Collection $fileName doesn't exist. Exiting.."
             exit 1
         fi
-    fi
-    echo "importing $currentFile"
-    mongoimport --uri "$MONGO_URI" --file="$currentFile" --mode=upsert
-    if [ $? -eq 1 ]
-    then
-        exit 1
+        mongoimport --uri "$MONGO_URI" --file="$currentFile" --mode=upsert
     fi
 done

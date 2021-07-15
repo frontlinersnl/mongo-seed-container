@@ -1,12 +1,13 @@
 {
   "name": "mongo-seed-container",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "[![logo](./logo.jpg)](https://inforit.nl)",
   "main": "Dockerfile",
   "scripts": {
     "build": "docker build -t inforitnl/mongo-seed .",
     "tag": "docker tag inforitnl/mongo-seed",
-    "push": "docker push inforitnl/mongo-seed"
+    "push": "docker push inforitnl/mongo-seed",
+    "test": "docker build -t mongo-seed-test . && docker run -v ${PWD}/seed:/tmp/mongoseed -e MONGO_URI=\"mongodb://admin:123@172.17.0.1:27017/seed?authSource=admin\" mongo-seed-test"
   },
   "repository": {
     "type": "git",
