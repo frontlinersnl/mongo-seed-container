@@ -9,6 +9,8 @@ MONGO_USERNAME="${MONGO_USERNAME:-"admin"}"
 MONGO_PASSWORD="${MONGO_PASSWORD:-"123"}"
 MONGO_CREATE_COLLECTIONS="${MONGO_CREATE_COLLECTIONS:-"true"}"
 IGNORE_NON_EMPTY="${IGNORE_NON_EMPTY:-"false"}"
+DYNAMIC_DATABASE_NAME="${CUSTOM_URI_WITH_DYNAMIC_DATABASE_NAME:-"false"}"
+DB_NAME_PATTERN="${DB_NAME_PATTERN:-"<databaseName>"}"
 
 # user can specify an uri instead, most other settings will be ignored.
 MONGO_URI="${MONGO_URI:-"mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@$MONGO_HOST:$MONGO_PORT/$MONGO_DB?authSource=$MONGO_AUTH_DB"}"
@@ -16,6 +18,11 @@ MONGO_URI="${MONGO_URI:-"mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@$MONGO_HOST:$
 # user can specify a custom seed files path
 SEED_FILES_PATH="${SEED_FILES_PATH:-"/tmp/mongoseed/"}"
 
+# if the dynamic database property is set to true make sure to replace the DB_NAME_PATTERN in the url with the value from $MONGO_DB
+if [ "$DYNAMIC_DATABASE_NAME" == "true" ]; then
+    echo "dynamic database parameter set. Replacing <databaseName> in the url with the provided value for \$MONGO_DB"
+    MONGO_URI="${MONGO_URI/$DB_NAME_PATTERN/$MONGO_DB}"
+fi
 
 collectionsWithCount=$(mongo "${MONGO_URI}" --quiet --eval "
     var result = [];

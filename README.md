@@ -51,6 +51,8 @@ services:
 | MONGO_PASSWORD           | password                                                                                     |
 | SEED_FILES_PATH          | custom path to seed files, defaults to /tmp/mongoseed                                       |
 | IGNORE_NON_EMPTY         | when set to true will prevent seed data from importing when the collection exists and has more than 0 records |
+| DYNAMIC_DATABASE_NAME    | when set to true will replace $DB_NAME_PATTERN in the connectionstring with $MONGO_DB |
+| DB_NAME_PATTERN         | pattern to replace with $DYNAMIC_DATABASE_NAME |
 
 ## update instructions
 
