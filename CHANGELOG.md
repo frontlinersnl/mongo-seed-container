@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1]
+
+### fixed
+
+- "Typo" in the variable assignment for DYNAMIC_DATABASE_NAME
+
 ## [2.2.0]
 
 Added the ability to pass in "DYNAMIC_DATABASE_NAME" to enable users to replace a specific string (DB_NAME_PATTERN) within the connection url with the value of $MONGO_DB
