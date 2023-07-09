@@ -1,4 +1,4 @@
-FROM mongo
+FROM mongo:6
 WORKDIR /tmp/mongoseed
 COPY ./scripts /opt/
 RUN chmod +x /opt/mongo-seed.sh
